@@ -21,17 +21,22 @@ class Ambiente:
         estudo_corrente = Estudo(
             Card(
                 api_object['card']['id'],
-                api_object['card']['difficulty'])
-            ,
-            api_object['currentDate'],
-            api_object['lastRepetition'],
+                api_object['card']['difficulty'],
+                api_object['card']['tag']['id']
+            ),
+            datetime.strptime(api_object['lastRepetition'], '%Y/%m/%d %H:%M:%S'),
+            datetime.strptime(api_object['currentDate'], '%Y/%m/%d %H:%M:%S'),
             api_object['numberOfRepetition'],
             False,
             api_object['isRight']
         )
-        recompensa = self.__calcular_recompensa__(resposta_usuario, estudo_corrente)
+        id_estudante = api_object['student']['id']
 
-        novo_ef = self.__agente__.tomar_acao(recompensa, estudo_corrente)
+        recompensa = None
+        if estudo_corrente.numero_repeticao is not 1:
+            recompensa = self.__calcular_recompensa__(resposta_usuario, estudo_corrente)
+
+        novo_ef = self.__agente__.tomar_acao(id_estudante, recompensa, estudo_corrente)
         proxima_repeticao = self.__calcular_proxima_repeticao__(estudo_corrente)
         estudo_completado = self.__verificar_estudo_completado__(estudo_corrente.data_ultima_repeticao, proxima_repeticao)
 
@@ -71,7 +76,8 @@ class Ambiente:
             return calcular_oi(ef, repeticao) - calcular_oi(ef, repeticao - 1)
 
     def __verificar_estudo_completado__(self, ultima_repeticao, proxima_repeticao):
-        return (proxima_repeticao - ultima_repeticao).days >= 730
+        completado = (proxima_repeticao - ultima_repeticao).days >= 730
+        return completado
 
     def __montar_resposta__(self, novo_ef, data_proxima_repeticao, estudo_foi_completado):
         return {

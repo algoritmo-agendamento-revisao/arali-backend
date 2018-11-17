@@ -14,7 +14,7 @@ class GerenciadorTabelaQLearning:
         self.__qtd_acoes__ = qtd_acoes
 
     def __criar_nova_tabela_vazia__(self, tag: str):
-        nova_tabela = np.zeros([self.__qtd_estados__, self.__qtd_acoes__])
+
         self.__tabelas_qlearning__[tag] = nova_tabela
 
     def criar_nova_tabela(self, tabela_qlearning, tag):

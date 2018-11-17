@@ -2,6 +2,7 @@ import numpy as np
 from utilitario.utilitario_qlearning.utilitarioqlearning import UtilitarioQLearning
 from modelos.estudo import Estudo
 from gerenciador.gerenciador_tabela_qlearning.gerenciador_tabela_qlearning import GerenciadorTabelaQLearning
+from gerenciador.gerenciador_mongodb.gerenciador_mongodb import GerenciadorMongoDB
 
 class Agente:
     def __init__(self):
@@ -12,20 +13,23 @@ class Agente:
         self.__taxa_aprendizagem__ = 0.1
         self.__fator_desconto__ = 0.1
         self.__taxa_exploracao__ = 0.1
-        self.__gerenciador_tabela_qlearning__ = GerenciadorTabelaQLearning(self.__qtd_repeticoes, self.__qtd_efs__)
+        self.__gerenciador_mongodb__ = GerenciadorMongoDB()
 
-    def tomar_acao(self, recompensa: float, estudo: Estudo):
+    def tomar_acao(self, id_estudante: int, recompensa: float, estudo: Estudo):
         if estudo.numero_repeticao is not 1:
-            self.__atualizar_politica__(recompensa, estudo)
-        novo_ef = self.__calcular_ef_card__(estudo)
-        return 2.4
+            self.__atualizar_politica__(id_estudante, recompensa, estudo)
+        novo_ef = self.__calcular_ef_card__(id_estudante, estudo)
+        return novo_ef
 
-    def __atualizar_politica__(self, recompensa: float, estudo: Estudo):
+    def __atualizar_politica__(self, id_estudante: int, recompensa: float, estudo: Estudo):
         fator_desconto = self.__fator_desconto__  # y
         taxa_aprendizagem = self.__taxa_aprendizagem__  # a
-        tag = estudo.card.tag
+        tag_id = estudo.card.tag_id
 
-        tabela_qlearning = self.__gerenciador_tabela_qlearning__.obter_tabela_qlearning(tag)
+        tabela_qlearning = self.__gerenciador_mongodb__.carregar_tabela(id_estudante, tag_id)
+
+        if tabela_qlearning is None:
+            tabela_qlearning = self.__gerenciador_mongodb__.criar_tabela(id_estudante, tag_id)
 
         s = self.__mapear_numero_repeticao_em_estado__(estudo.numero_repeticao)
         a = self.__mapear_ef_em_acao__(estudo.card.ef)
@@ -34,15 +38,18 @@ class Agente:
         q_proxima_acao = tabela_qlearning[s + 1, :]
 
         tabela_qlearning[s, a] = q_atual + taxa_aprendizagem * (recompensa + (fator_desconto * np.max(q_proxima_acao)) - q_atual)
-        self.__gerenciador_tabela_qlearning__.atualizar_tabela_qlearning(tabela_qlearning, tag)
+        self.__gerenciador_mongodb__.atualizar_tabela(tabela_qlearning, id_estudante, tag_id)
 
 
-    def __calcular_ef_card__(self, estudo: Estudo):
+    def __calcular_ef_card__(self, id_estudante, estudo: Estudo):
         if estudo.acerto_ultima_repeticao is False:  # Reseta estudo caso o usuário erre a questão
             return 1.3
         else:
-            tag = estudo.card.tag
-            tabela_qlearning = self.__gerenciador_tabela_qlearning__.obter_tabela_qlearning(tag)
+            tag_id = estudo.card.tag_id
+            tabela_qlearning = self.__gerenciador_mongodb__.carregar_tabela(id_estudante, tag_id)
+
+            if tabela_qlearning is None:
+                tabela_qlearning = self.__gerenciador_mongodb__.criar_tabela(id_estudante, tag_id)
 
             s = estudo.numero_repeticao - 1  # Recompensa será atribuída a ação passada
             q_atual = tabela_qlearning[s, :]

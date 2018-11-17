@@ -4,7 +4,6 @@ from modelos.card import Card
 class Estudo:
     tag: str
     card: Card
-    data_primeira_repeticao: datetime
     data_ultima_repeticao: datetime
     data_proxima_repeticao: datetime
     numero_repeticao: int
