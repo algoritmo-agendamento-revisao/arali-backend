@@ -24,9 +24,9 @@ class Ambiente:
                 api_object['card']['difficulty'],
                 api_object['card']['tag']['id']
             ),
-            datetime.strptime(api_object['lastRepetition'], '%Y/%m/%d %H:%M:%S'),
-            datetime.strptime(api_object['currentDate'], '%Y/%m/%d %H:%M:%S'),
-            api_object['numberOfRepetition'],
+            datetime.strptime(api_object['lastRepetition'], '%b %d, %Y %I:%M:%S %p'),
+            datetime.strptime(api_object['currentDate'], '%b %d, %Y %I:%M:%S %p'),
+            api_object['numberOfRepetitions'],
             False,
             api_object['isRight']
         )
@@ -62,7 +62,7 @@ class Ambiente:
     def __calcular_proxima_repeticao__(self, estudo: Estudo):
         if estudo.acerto_ultima_repeticao is False:  # Caso o usuário tenha errado a pergunta
             # A próxima repetição será agendada para o próximo dia
-            return estudo.datetime.now() + timedelta(days=1)
+            return datetime.now() + timedelta(days=1)
         else:  # Caso o usuário tenha acertado
             ef = estudo.card.ef  # O ef não é alterado, é apenas utilizado para ser passado de parâmetro
             # A próxima repetição será agendada conforme a diferença entre os intervalos das repetições R e R-1

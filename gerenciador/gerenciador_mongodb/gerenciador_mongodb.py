@@ -7,7 +7,7 @@ import numpy as np
 class GerenciadorMongoDB:
 
     def __init__(self):
-        self.__client__ = MongoClient('0.0.0.0:27017')
+        self.__client__ = MongoClient('localhost:27017')
         self.__db__ = self.__client__.arali
         self.__estado__ = self.__db__.estado
 

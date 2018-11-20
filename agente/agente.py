@@ -1,7 +1,5 @@
 import numpy as np
-from utilitario.utilitario_qlearning.utilitarioqlearning import UtilitarioQLearning
 from modelos.estudo import Estudo
-from gerenciador.gerenciador_tabela_qlearning.gerenciador_tabela_qlearning import GerenciadorTabelaQLearning
 from gerenciador.gerenciador_mongodb.gerenciador_mongodb import GerenciadorMongoDB
 
 class Agente:
@@ -9,7 +7,6 @@ class Agente:
         # Contrói uma tabela com uma linha a mais por causa da ultima repetição
         self.__qtd_efs__ = 16  # 1.3 - 2.8
         self.__qtd_repeticoes = 36  # Número de repetições para que no ef mais baixo dê mais de 2 anos
-        self.__utilitario_qlearning__ = UtilitarioQLearning()
         self.__taxa_aprendizagem__ = 0.1
         self.__fator_desconto__ = 0.1
         self.__taxa_exploracao__ = 0.1
@@ -57,7 +54,7 @@ class Agente:
             taxa_exploracao = self.__taxa_exploracao__
 
             acao = np.argmax(q_atual + np.random.randn(1, self.__qtd_efs__) * taxa_exploracao)
-            return self.__utilitario_qlearning__.mapear_acao_em_ef(acao)
+            return self.__mapear_acao_em_ef__(acao)
 
     def __mapear_numero_repeticao_em_estado__(self, repeticao: int):
         return repeticao - 1
