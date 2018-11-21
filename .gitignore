@@ -66,3 +66,6 @@ fabric.properties
 main.py
 teste_rf.py
 teste.py
+ambiente/__pycache__/
+modelos/__pycache__/
+modelos_matematicos/formula_repeticao/__pycache__/
