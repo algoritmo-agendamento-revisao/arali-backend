@@ -46,7 +46,7 @@ class Ambiente:
                 "difficulty": novo_ef,
             },
             "completed": estudo_completado,
-            "nextRepetition": proxima_repeticao
+            "nextRepetition": proxima_repeticao.strftime("%b %d, %Y %I:%M:%S %p"),
         }
 
     def __calcular_recompensa__(self, resposta: RespostaUsuario, estudo_corrente: Estudo):
@@ -84,6 +84,6 @@ class Ambiente:
             "card":{
                 "difficulty": novo_ef
             },
-            "nextRepetition": data_proxima_repeticao,
+            "nextRepetition": data_proxima_repeticao.strftime("%b %d, %Y %I:%M:%S %p"),
             "completed": estudo_foi_completado
         }
